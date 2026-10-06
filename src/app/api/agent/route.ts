@@ -44,7 +44,7 @@ If the user asks for a location not explicitly listed, extrapolate a reasonable 
       }
     });
     
-    return Response.json(JSON.parse(response.text));
+    return Response.json(JSON.parse(response.text || '{}'));
   } catch (error) {
     console.error('Agent API Error:', error);
     return Response.json({ error: "Failed to process agentic request" }, { status: 500 });
