@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import CampusMap from '@/components/CampusMap';
 import AgenticInterface from '@/components/AgenticInterface';
+import DashboardBento from '@/components/DashboardBento';
 import { motion } from 'framer-motion';
 
 export default function Home() {
@@ -39,6 +40,9 @@ export default function Home() {
 
       {/* Agentic Input */}
       <AgenticInterface onLocationFound={handleLocationFound} />
+
+      {/* Bento Dashboard */}
+      <DashboardBento />
     </main>
   );
 }
