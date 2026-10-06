@@ -12,7 +12,7 @@ export async function PATCH(
 
     const { data, error } = await supabase
       .from('requests')
-      .update(body) 
+      .update(body)
       .eq('id', id)
       .select()
       .single();

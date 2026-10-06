@@ -103,7 +103,7 @@ export default function CampusMap({ targetCoordinates, intent }: CampusMapProps)
 
         <Environment preset="city" />
 
-        <CampusModel url="/campus.glb" />
+        <FallbackCampus />
 
         {targetCoordinates && (
           <group position={targetCoordinates}>
@@ -119,7 +119,7 @@ export default function CampusMap({ targetCoordinates, intent }: CampusMapProps)
             
             {/* Label for Intent */}
             {intent && (
-              <Html position={[0, 5, 0]} center center>
+              <Html position={[0, 5, 0]} center>
                 <div className="bg-black/80 backdrop-blur-md text-white px-4 py-2 rounded-full border border-white/10 text-sm whitespace-nowrap shadow-2xl animate-in fade-in zoom-in duration-300">
                   {intent}
                 </div>
