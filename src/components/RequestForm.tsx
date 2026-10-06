@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
-export default function RequestForm() {
+export default function RequestForm({ onRefreshNeeded }: { onRefreshNeeded?: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,7 +25,9 @@ export default function RequestForm() {
       });
       if (res.ok) {
         (e.target as HTMLFormElement).reset();
-        // Optionally trigger a refresh in DashboardBento here
+        if (onRefreshNeeded) {
+          onRefreshNeeded();
+        }
       }
     } catch (err) {
       console.error(err);
@@ -78,9 +80,10 @@ export default function RequestForm() {
               <option value="hr">Human Resources</option>
             </select>
             <select name="priority" className="w-full bg-[#2c2c2e]/60 border border-white/[0.04] rounded-[16px] px-4 py-3.5 text-white focus:outline-none focus:bg-[#2c2c2e] transition-all appearance-none cursor-pointer text-[15px] font-medium tracking-tight">
-              <option value="low">Low Priority</option>
-              <option value="medium">Medium Priority</option>
+              <option value="urgent">Urgent Priority</option>
               <option value="high">High Priority</option>
+              <option value="medium">Medium Priority</option>
+              <option value="low">Low Priority</option>
             </select>
           </div>
 

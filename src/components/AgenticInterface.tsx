@@ -43,24 +43,27 @@ export default function AgenticInterface({ onLocationFound, onRefreshNeeded }: A
         if (coords) {
           onLocationFound(coords as [number, number, number], data.action.intent || data.reply);
           
-          // --- NEW: Automatically create a real ticket in Supabase! ---
-          // We only create a ticket if it looks like an actionable request (not just "NAVIGATE")
-          if (data.action.intent !== 'NAVIGATE' || prompt.length > 20) {
+          // --- Automatically create a real ticket in Supabase ---
+          const lowerP = prompt.toLowerCase();
+          const isProblemReport = lowerP.includes("urgent") || lowerP.includes("leak") || lowerP.includes("broken") || lowerP.includes("issue") || lowerP.includes("fix") || lowerP.includes("help") || lowerP.includes("problem") || prompt.length > 15;
+
+          if (isProblemReport) {
             try {
+              const assignedPriority = (data.action.priority || 'medium').toLowerCase();
               const res = await fetch('/api/requests', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                  title: `AI: ${prompt.length > 30 ? prompt.substring(0, 30) + '...' : prompt}`,
+                  title: prompt.length > 35 ? prompt.substring(0, 35) + '...' : prompt,
                   description: data.reply,
                   department: data.action.department || 'facilities',
-                  priority: (data.action.priority || 'medium').toLowerCase(),
+                  priority: assignedPriority,
                   location_id: data.action.location_id
                 })
               });
               if (res.ok && onRefreshNeeded) {
-                // Wait a tiny bit for the DB to settle, then refresh the dashboard
-                setTimeout(() => onRefreshNeeded(), 500); 
+                onRefreshNeeded(); // Immediate refresh
+                setTimeout(() => onRefreshNeeded(), 400); // DB propagation sync
               }
             } catch (ticketErr) {
               console.error("Failed to auto-create ticket:", ticketErr);

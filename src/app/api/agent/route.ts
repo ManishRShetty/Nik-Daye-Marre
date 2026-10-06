@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from 'next/server';
 import { GoogleGenAI, Type } from '@google/genai';
 import { LOCATIONS } from '@/lib/constants';
@@ -7,14 +9,22 @@ export async function POST(request: Request) {
   try {
     const { message } = await request.json();
 
+    const lowerMsg = (message || '').toLowerCase();
+    let detectedPriority = "Medium";
+    if (lowerMsg.includes("urgent") || lowerMsg.includes("emergency") || lowerMsg.includes("leak") || lowerMsg.includes("fire") || lowerMsg.includes("broken") || lowerMsg.includes("asap") || lowerMsg.includes("danger") || lowerMsg.includes("immediate")) {
+      detectedPriority = "Urgent";
+    } else if (lowerMsg.includes("high") || lowerMsg.includes("important") || lowerMsg.includes("quick")) {
+      detectedPriority = "High";
+    }
+
     if (!process.env.GEMINI_API_KEY) {
       console.warn("No GEMINI_API_KEY found, returning mock response.");
       return NextResponse.json({
-        reply: "I've logged a high-priority maintenance request (Mock). Add GEMINI_API_KEY to .env to use real AI.",
+        reply: `I've logged a ${detectedPriority.toLowerCase()}-priority request. Add GEMINI_API_KEY to .env to use real AI.`,
         action: {
           intent: "CREATE_TICKET",
           department: "Maintenance",
-          priority: "Urgent",
+          priority: detectedPriority,
           location_id: "LAB_3"
         }
       });
@@ -28,21 +38,27 @@ export async function POST(request: Request) {
       try {
         const response = await ai.models.generateContent({
           model: modelName,
-          contents: `You are an AI assistant for a smart campus. User says: "${message}". 
-          Identify the intent, department, priority, and map the location to one of these valid location_ids: ${Object.keys(LOCATIONS).join(', ')}. 
+          contents: `You are an AI assistant for a smart campus support platform. User request: "${message}". 
+          Identify the intent, department, priority level, and map the location to one of these valid location_ids: ${Object.keys(LOCATIONS).join(', ')}. 
+          
+          Priority Rules:
+          - If the issue mentions urgent, emergency, water leak, fire, dangerous, broken equipment, immediate help, or critical system down, set priority to "Urgent".
+          - If it's an important issue needed soon, set priority to "High".
+          - Standard issues default to "Medium" or "Low".
+
           Respond strictly in the required JSON format.`,
           config: {
             responseMimeType: "application/json",
             responseSchema: {
               type: Type.OBJECT,
               properties: {
-                reply: { type: Type.STRING, description: "A friendly reply to the user" },
+                reply: { type: Type.STRING, description: "A helpful confirmation reply to the user" },
                 action: {
                   type: Type.OBJECT,
                   properties: {
                     intent: { type: Type.STRING },
                     department: { type: Type.STRING },
-                    priority: { type: Type.STRING },
+                    priority: { type: Type.STRING, description: "Must be one of: Urgent, High, Medium, Low" },
                     location_id: { type: Type.STRING, description: `Must be one of: ${Object.keys(LOCATIONS).join(', ')}` }
                   },
                   required: ["intent", "department", "priority", "location_id"]
@@ -60,14 +76,12 @@ export async function POST(request: Request) {
       } catch (error: any) {
         console.warn(`Model ${modelName} failed:`, error.message);
         lastError = error;
-        // Continue to the next model in the array
       }
     }
 
-    // If we reach here, ALL AI models failed (quota exceeded, invalid key, etc)
+    // Fallback if AI models fail
     console.error("All AI models failed, using intelligent heuristic fallback.");
     
-    const lowerMsg = message.toLowerCase();
     let foundLocation = "LAB_3"; // Default
     for (const loc of Object.keys(LOCATIONS)) {
       if (lowerMsg.includes(loc.toLowerCase().replace('_', ' '))) {
@@ -77,11 +91,11 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({
-      reply: "AI is currently offline due to rate limits. I have used a fallback system to find your location.",
+      reply: `Ticket processed with ${detectedPriority} priority. I have located your issue on the campus map.`,
       action: {
-        intent: "NAVIGATE",
-        department: "Fallback",
-        priority: "Normal",
+        intent: "CREATE_TICKET",
+        department: "General",
+        priority: detectedPriority,
         location_id: foundLocation
       }
     });

@@ -143,14 +143,7 @@ export default function CampusMap({ targetCoordinates, intent, tickets = [] }: C
 
         {/* Render markers for all open tickets */}
         {tickets.filter(t => t.status !== 'Resolved' && t.status !== 'Completed').map((ticket, index) => {
-          let coords = LOCATIONS[ticket.location_id as LocationId];
-          
-          // If the location_id from Supabase isn't in our constants, place it dynamically
-          // so it still shows up on the map instead of disappearing!
-          if (!coords) {
-            // Space them out slightly in the air above the center
-            coords = [0 + (index * 2), 20, 0 + (index * 2)];
-          }
+          let coords: [number, number, number] = (LOCATIONS[ticket.location_id as LocationId] as [number, number, number]) || [0 + (index * 2), 20, 0 + (index * 2)];
           
           return (
             <group key={ticket.id} position={coords}>

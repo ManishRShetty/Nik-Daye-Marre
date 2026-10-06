@@ -17,14 +17,14 @@ export default function Home() {
 
   const fetchTickets = async () => {
     try {
-      const res = await fetch('/api/requests');
+      const res = await fetch(`/api/requests?t=${Date.now()}`, { cache: 'no-store' });
       const text = await res.text();
       if (!res.ok || !text) throw new Error("Fetch failed");
       const json = JSON.parse(text);
       setTickets(Array.isArray(json) ? json : (json.data || []));
     } catch (err) {
       try {
-        const fRes = await fetch('/fallbackData.json');
+        const fRes = await fetch('/fallbackData.json', { cache: 'no-store' });
         const fJson = await fRes.json();
         setTickets(fJson.data || []);
       } catch (e) {}
@@ -33,6 +33,11 @@ export default function Home() {
 
   useEffect(() => {
     fetchTickets();
+    // Real-time polling every 3 seconds so map and dashboard update dynamically without page refresh
+    const interval = setInterval(() => {
+      fetchTickets();
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleLocationFound = (coords: [number, number, number], newIntent: string) => {

@@ -10,16 +10,23 @@ export default function DashboardBento({ tickets = [], userRole = 'admin', onRef
   const [searchQuery, setSearchQuery] = useState('');
   const [filterPriority, setFilterPriority] = useState('All');
   
-  // Filter and sort tickets
-  const filteredTickets = tickets.filter(t => {
-    if (searchQuery && !t.title.toLowerCase().includes(searchQuery.toLowerCase()) && !t.description?.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false;
-    }
-    if (filterPriority !== 'All' && t.priority?.toLowerCase() !== filterPriority.toLowerCase()) {
-      return false;
-    }
-    return true;
-  });
+  // Filter and sort tickets (Urgent tickets sorted to top)
+  const filteredTickets = tickets
+    .filter(t => {
+      if (searchQuery && !t.title.toLowerCase().includes(searchQuery.toLowerCase()) && !t.description?.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return false;
+      }
+      if (filterPriority !== 'All' && t.priority?.toLowerCase() !== filterPriority.toLowerCase()) {
+        return false;
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      const pOrder: Record<string, number> = { urgent: 0, high: 1, medium: 2, low: 3 };
+      const aP = pOrder[(a.priority || 'medium').toLowerCase()] ?? 2;
+      const bP = pOrder[(b.priority || 'medium').toLowerCase()] ?? 2;
+      return aP - bP;
+    });
 
   // --- Real-time Average Resolution Time Calculation ---
   let totalMinutes = 0;
@@ -108,7 +115,7 @@ export default function DashboardBento({ tickets = [], userRole = 'admin', onRef
 
         {/* Bento Item 2: Request Form */}
         <div className="shrink-0">
-          <RequestForm />
+          <RequestForm onRefreshNeeded={onRefreshNeeded} />
         </div>
 
         {/* Bento Item 3: Recent Activity / Tickets */}

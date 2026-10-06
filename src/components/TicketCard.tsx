@@ -7,14 +7,15 @@ export interface TicketCardProps {
   id: string;
   title: string;
   status: 'Open' | 'Pending' | 'In Progress' | 'Resolved' | 'Completed';
-  time: string;
+  priority?: string;
+  time?: string;
   description: string;
   delay?: number;
   userRole?: 'admin' | 'student';
   onRefreshNeeded?: () => void;
 }
 
-export default function TicketCard({ id, title, status, time, description, delay = 0, userRole = 'student', onRefreshNeeded }: TicketCardProps) {
+export default function TicketCard({ id, title, status, priority = 'medium', time = 'Just now', description, delay = 0, userRole = 'student', onRefreshNeeded }: TicketCardProps) {
   const [currentStatus, setCurrentStatus] = React.useState(status);
 
   const statusColors: Record<string, string> = {
@@ -24,6 +25,15 @@ export default function TicketCard({ id, title, status, time, description, delay
     'Resolved': 'text-[#30d158] bg-[#30d158]/10',
     'Completed': 'text-[#30d158] bg-[#30d158]/10'
   };
+
+  const priorityColors: Record<string, string> = {
+    'urgent': 'text-red-400 bg-red-500/15 border-red-500/30 font-bold',
+    'high': 'text-orange-400 bg-orange-500/15 border-orange-500/30',
+    'medium': 'text-blue-400 bg-blue-500/15 border-blue-500/30',
+    'low': 'text-zinc-400 bg-zinc-500/15 border-zinc-500/30'
+  };
+
+  const normPriority = (priority || 'medium').toLowerCase();
 
   const handleStatusChange = async (newStatus: string) => {
     setCurrentStatus(newStatus as any);
@@ -50,9 +60,16 @@ export default function TicketCard({ id, title, status, time, description, delay
       className="p-5 rounded-[24px] bg-[#1c1c1e]/60 backdrop-blur-3xl border border-white/[0.05] hover:bg-[#1c1c1e]/80 transition-all duration-300 group"
     >
       <div className="flex justify-between items-start mb-2">
-        <h3 className="text-white font-semibold text-[17px] tracking-tight leading-tight transition-colors pr-2">
-          {title}
-        </h3>
+        <div className="flex flex-col gap-1 pr-2">
+          <h3 className="text-white font-semibold text-[17px] tracking-tight leading-tight transition-colors">
+            {title}
+          </h3>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <span className={`px-2 py-0.5 rounded-md text-[10px] uppercase tracking-wider font-semibold border ${priorityColors[normPriority] || priorityColors['medium']}`}>
+              {normPriority}
+            </span>
+          </div>
+        </div>
         
         {userRole === 'admin' ? (
           <select 
