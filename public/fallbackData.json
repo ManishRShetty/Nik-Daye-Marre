@@ -1,0 +1,104 @@
+{
+  "data": [
+    {
+      "id": "REQ-001",
+      "title": "AC Leaking in Lab 3",
+      "description": "Water dripping directly onto workstation 4.",
+      "department": "Maintenance",
+      "priority": "Urgent",
+      "status": "Pending",
+      "location_id": "LAB_3",
+      "created_at": "2026-10-06T09:00:00Z"
+    },
+    {
+      "id": "REQ-002",
+      "title": "Wi-Fi Down",
+      "description": "No internet access in the entire building.",
+      "department": "IT",
+      "priority": "Urgent",
+      "status": "In Progress",
+      "location_id": "LIBRARY",
+      "created_at": "2026-10-06T10:15:00Z"
+    },
+    {
+      "id": "REQ-003",
+      "title": "Broken Chair",
+      "description": "Chair in the corner is missing a wheel.",
+      "department": "Facilities",
+      "priority": "Low",
+      "status": "Pending",
+      "location_id": "ADMIN_BLOCK",
+      "created_at": "2026-10-06T11:30:00Z"
+    },
+    {
+      "id": "REQ-004",
+      "title": "Coffee Machine Empty",
+      "description": "Needs a refill of beans and milk.",
+      "department": "Facilities",
+      "priority": "Medium",
+      "status": "Resolved",
+      "location_id": "CAFETARIA",
+      "created_at": "2026-10-05T08:00:00Z"
+    },
+    {
+      "id": "REQ-005",
+      "title": "Door jammed",
+      "description": "Main entrance door is stuck open.",
+      "department": "Security",
+      "priority": "High",
+      "status": "Pending",
+      "location_id": "MAIN_GATE",
+      "created_at": "2026-10-06T07:45:00Z"
+    },
+    {
+      "id": "REQ-006",
+      "title": "Lightbulb burnt out",
+      "description": "Flickering light in the hallway.",
+      "department": "Maintenance",
+      "priority": "Low",
+      "status": "In Progress",
+      "location_id": "HOSTEL_A",
+      "created_at": "2026-10-06T12:00:00Z"
+    },
+    {
+      "id": "REQ-007",
+      "title": "Software Installation",
+      "description": "Need AutoCAD installed on machines 1-10.",
+      "department": "IT",
+      "priority": "Medium",
+      "status": "Pending",
+      "location_id": "LAB_3",
+      "created_at": "2026-10-06T09:30:00Z"
+    },
+    {
+      "id": "REQ-008",
+      "title": "Spill on floor",
+      "description": "Someone dropped their lunch near the entrance.",
+      "department": "Facilities",
+      "priority": "High",
+      "status": "Resolved",
+      "location_id": "CAFETARIA",
+      "created_at": "2026-10-05T13:00:00Z"
+    },
+    {
+      "id": "REQ-009",
+      "title": "ID Card Printer Broken",
+      "description": "Printer is jamming on every 3rd card.",
+      "department": "IT",
+      "priority": "Urgent",
+      "status": "Pending",
+      "location_id": "ADMIN_BLOCK",
+      "created_at": "2026-10-06T11:00:00Z"
+    },
+    {
+      "id": "REQ-010",
+      "title": "Noise Complaint",
+      "description": "Loud music playing after quiet hours.",
+      "department": "Security",
+      "priority": "Medium",
+      "status": "In Progress",
+      "location_id": "HOSTEL_A",
+      "created_at": "2026-10-06T23:00:00Z"
+    }
+  ]
+}
