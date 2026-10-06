@@ -17,7 +17,11 @@ export const metadata: Metadata = {
   description: "Navigate a stunning 3D campus using an agentic LLM bridge. Just tell the AI where you want to go and watch it fly there.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html
       lang="en"
