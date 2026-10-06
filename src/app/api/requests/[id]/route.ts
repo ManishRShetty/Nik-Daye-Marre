@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 // PATCH /api/requests/:id (Update ticket status)
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await request.json();
