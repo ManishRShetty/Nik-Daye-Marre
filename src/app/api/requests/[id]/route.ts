@@ -1,23 +1,26 @@
 import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 
+// PATCH /api/requests/:id (Update ticket status)
 export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
     const body = await request.json();
-    
-    // In Phase 3, this will update Supabase
-    // await supabase.from('requests').update({ status: body.status }).eq('id', id);
+    const { id } = await params;
 
-    return NextResponse.json({
-      id: id,
-      status: body.status || "In Progress",
-      updated_at: new Date().toISOString()
-    }, { status: 200 });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    const { data, error } = await supabase
+      .from('requests')
+      .update(body)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return NextResponse.json(data);
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
   }
 }

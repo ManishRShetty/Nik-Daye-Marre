@@ -1,0 +1,82 @@
+[
+  {
+    "title": "Broken Projector in Main Hall",
+    "description": "The projector in the main hall won't turn on during lectures. The status light is blinking red.",
+    "department": "IT Support",
+    "location_id": "Main Hall - Room 101",
+    "priority": "high",
+    "status": "pending"
+  },
+  {
+    "title": "Leaking Pipe in Chemistry Lab",
+    "description": "There is a minor leak under the third sink in the row. Water is pooling on the floor.",
+    "department": "Maintenance",
+    "location_id": "Science Building - Lab 304",
+    "priority": "high",
+    "status": "pending"
+  },
+  {
+    "title": "Restock Printer Paper",
+    "description": "The library printers are completely out of A4 paper.",
+    "department": "Supplies",
+    "location_id": "Library - 1st Floor",
+    "priority": "low",
+    "status": "pending"
+  },
+  {
+    "title": "Air Conditioning Not Working",
+    "description": "The AC unit is blowing hot air. Students are complaining about the heat.",
+    "department": "Maintenance",
+    "location_id": "Arts Building - Room 212",
+    "priority": "medium",
+    "status": "pending"
+  },
+  {
+    "title": "Wi-Fi Dead Zone",
+    "description": "Students cannot connect to the campus Wi-Fi in the northwest corner of the cafeteria.",
+    "department": "IT Support",
+    "location_id": "Student Union - Cafeteria",
+    "priority": "medium",
+    "status": "pending"
+  },
+  {
+    "title": "Broken Chair",
+    "description": "One of the rolling chairs has a missing wheel and needs to be replaced.",
+    "department": "Facilities",
+    "location_id": "Engineering Block - Room 405",
+    "priority": "low",
+    "status": "pending"
+  },
+  {
+    "title": "Fire Extinguisher Inspection Required",
+    "description": "The inspection tag on the fire extinguisher in the hallway is expired by 2 months.",
+    "department": "Safety",
+    "location_id": "Dormitory A - 2nd Floor Hallway",
+    "priority": "high",
+    "status": "pending"
+  },
+  {
+    "title": "Lost and Found Key Batch",
+    "description": "A set of keys was found near the stadium bleachers. Need security to collect them.",
+    "department": "Security",
+    "location_id": "Athletics Field",
+    "priority": "medium",
+    "status": "pending"
+  },
+  {
+    "title": "Whiteboard Markers Empty",
+    "description": "All dry-erase markers in the room are dried out. Need a fresh box.",
+    "department": "Supplies",
+    "location_id": "Business School - Room 102",
+    "priority": "low",
+    "status": "pending"
+  },
+  {
+    "title": "Elevator Stuck on Floor 3",
+    "description": "The main elevator is stuck and the doors will not open. No one is inside.",
+    "department": "Maintenance",
+    "location_id": "Admin Building - Elevator A",
+    "priority": "high",
+    "status": "pending"
+  }
+]
