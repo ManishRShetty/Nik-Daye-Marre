@@ -73,31 +73,18 @@ export default function Home() {
             Powered by Agentic Bridge. Just tell the AI where you want to go.
           </p>
         </motion.div>
-
-        {/* Role Switcher (Hackathon Demo feature) */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="pointer-events-auto bg-[#1c1c1e]/80 backdrop-blur-3xl border border-white/[0.05] p-2 rounded-full flex items-center gap-2 shadow-lg"
-        >
-          <span className="text-[#86868b] text-xs font-medium pl-3 uppercase tracking-wider">Role:</span>
-          <select 
-            value={userRole}
-            onChange={(e) => setUserRole(e.target.value as 'admin' | 'student')}
-            className="bg-transparent text-white text-sm font-medium focus:outline-none cursor-pointer pr-2"
-          >
-            <option value="admin" className="bg-[#1c1c1e]">Admin / Faculty</option>
-            <option value="student" className="bg-[#1c1c1e]">Student A</option>
-          </select>
-        </motion.div>
       </div>
 
       {/* Agentic Input */}
       <AgenticInterface onLocationFound={handleLocationFound} onRefreshNeeded={fetchTickets} />
 
       {/* Bento Dashboard */}
-      <DashboardBento tickets={displayedTickets} userRole={userRole} onRefreshNeeded={fetchTickets} />
+      <DashboardBento 
+        tickets={displayedTickets} 
+        userRole={userRole} 
+        onUserRoleChange={setUserRole} 
+        onRefreshNeeded={fetchTickets} 
+      />
     </main>
   );
 }

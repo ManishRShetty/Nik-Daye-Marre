@@ -5,7 +5,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import TicketCard from './TicketCard';
 import RequestForm from './RequestForm';
 
-export default function DashboardBento({ tickets = [], userRole = 'admin', onRefreshNeeded }: { tickets?: any[], userRole?: 'admin' | 'student', onRefreshNeeded?: () => void }) {
+export interface DashboardBentoProps {
+  tickets?: any[];
+  userRole?: 'admin' | 'student';
+  onUserRoleChange?: (role: 'admin' | 'student') => void;
+  onRefreshNeeded?: () => void;
+}
+
+export default function DashboardBento({ 
+  tickets = [], 
+  userRole = 'admin', 
+  onUserRoleChange, 
+  onRefreshNeeded 
+}: DashboardBentoProps) {
   const [isMinimized, setIsMinimized] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterPriority, setFilterPriority] = useState('All');
@@ -55,24 +67,43 @@ export default function DashboardBento({ tickets = [], userRole = 'admin', onRef
 
   return (
     <div className="absolute inset-0 pointer-events-none z-10 flex items-center justify-end p-8 overflow-hidden">
-      {/* Toggle Button */}
-      <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        onClick={() => setIsMinimized(!isMinimized)}
-        className="pointer-events-auto absolute right-8 top-8 z-50 bg-[#1c1c1e]/80 backdrop-blur-3xl border border-white/[0.05] w-10 h-10 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-[#2c2c2e]/80 transition-all shadow-lg"
+      {/* Top Right Header Controls Bar */}
+      <motion.div 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="pointer-events-auto absolute right-8 top-8 z-50 flex items-center gap-3"
       >
-        <motion.svg 
-          animate={{ rotate: isMinimized ? 180 : 0 }} 
-          className="w-5 h-5" 
-          fill="none" 
-          viewBox="0 0 24 24" 
-          stroke="currentColor"
+        {/* Role Switcher Pill */}
+        <div className="bg-[#1c1c1e]/80 backdrop-blur-3xl border border-white/[0.08] px-3.5 py-2 rounded-full flex items-center gap-2 shadow-2xl">
+          <span className="text-[#86868b] text-[11px] font-semibold uppercase tracking-wider pl-1">Role:</span>
+          <select 
+            value={userRole}
+            onChange={(e) => onUserRoleChange?.(e.target.value as 'admin' | 'student')}
+            className="bg-transparent text-white text-xs font-semibold focus:outline-none cursor-pointer pr-1"
+          >
+            <option value="admin" className="bg-[#1c1c1e]">Admin / Faculty</option>
+            <option value="student" className="bg-[#1c1c1e]">Student A</option>
+          </select>
+        </div>
+
+        {/* Toggle Button */}
+        <button
+          onClick={() => setIsMinimized(!isMinimized)}
+          className="bg-[#1c1c1e]/80 backdrop-blur-3xl border border-white/[0.08] w-10 h-10 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-[#2c2c2e]/90 transition-all shadow-2xl active:scale-95"
+          title={isMinimized ? "Expand Dashboard" : "Minimize Dashboard"}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </motion.svg>
-      </motion.button>
+          <motion.svg 
+            animate={{ rotate: isMinimized ? 180 : 0 }} 
+            className="w-5 h-5" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </motion.svg>
+        </button>
+      </motion.div>
 
       <motion.div 
         initial={{ opacity: 0, x: 50 }}
