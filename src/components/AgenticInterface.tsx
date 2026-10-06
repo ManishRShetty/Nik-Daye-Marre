@@ -67,6 +67,4 @@ export default function AgenticInterface({ onLocationFound }: AgenticInterfacePr
       </div>
     </div>
   );
-};
-
-export default AgenticInterface;
+}
