@@ -52,19 +52,46 @@ export default function AgenticInterface({ onLocationFound }: AgenticInterfacePr
 
   return (
     <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-full max-w-lg z-10 pointer-events-auto">
-      <div className="bg-zinc-900/80 backdrop-blur-md p-4 rounded-xl border border-zinc-700/50 shadow-2xl flex gap-4">
+      <form 
+        onSubmit={handleSubmit}
+        className="bg-zinc-900/80 backdrop-blur-md p-4 rounded-xl border border-zinc-700/50 shadow-2xl flex gap-4"
+      >
         <input
           type="text"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          disabled={isLoading}
           placeholder="Tell the AI where to go..."
-          className="flex-1 bg-zinc-800/50 border border-zinc-700 rounded-lg px-4 py-2 text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="flex-1 bg-zinc-800/50 border border-zinc-700 rounded-lg px-4 py-2 text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
         />
         <button
-          type="button"
-          className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+          type="submit"
+          disabled={isLoading || !prompt.trim()}
+          className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-lg font-semibold transition-colors disabled:opacity-50 min-w-[100px] flex justify-center items-center"
         >
-          Send
+          {isLoading ? (
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+              className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full"
+            />
+          ) : (
+            'Send'
+          )}
         </button>
-      </div>
+      </form>
+      <AnimatePresence>
+        {error && (
+          <motion.p
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="text-red-400 text-xs mt-2 text-center bg-black/50 p-2 rounded-lg"
+          >
+            {error}
+          </motion.p>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

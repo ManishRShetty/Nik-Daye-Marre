@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { CameraControls, Environment, useGLTF, Html } from '@react-three/drei';
 import * as THREE from 'three';
@@ -103,7 +103,9 @@ export default function CampusMap({ targetCoordinates, intent }: CampusMapProps)
 
         <Environment preset="city" />
 
-        <FallbackCampus />
+        <Suspense fallback={<FallbackCampus />}>
+          <CampusModel url="/campus.glb" />
+        </Suspense>
 
         {targetCoordinates && (
           <group position={targetCoordinates}>
