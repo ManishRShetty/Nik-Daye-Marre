@@ -6,9 +6,10 @@ import { LOCATIONS, LocationId } from '@/lib/constants';
 
 interface AgenticInterfaceProps {
   onLocationFound: (coords: [number, number, number], intent: string) => void;
+  onRefreshNeeded?: () => void;
 }
 
-export default function AgenticInterface({ onLocationFound }: AgenticInterfaceProps) {
+export default function AgenticInterface({ onLocationFound, onRefreshNeeded }: AgenticInterfaceProps) {
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -27,7 +28,13 @@ export default function AgenticInterface({ onLocationFound }: AgenticInterfacePr
         body: JSON.stringify({ message: prompt }),
       });
 
-      if (!response.ok) throw new Error('Network response was not ok');
+      if (!response.ok) {
+        let errData;
+        try {
+          errData = await response.json();
+        } catch(e) {}
+        throw new Error(errData?.error || 'Network response was not ok');
+      }
 
       const data = await response.json();
 
@@ -35,6 +42,31 @@ export default function AgenticInterface({ onLocationFound }: AgenticInterfacePr
         const coords = LOCATIONS[data.action.location_id as LocationId];
         if (coords) {
           onLocationFound(coords as [number, number, number], data.action.intent || data.reply);
+          
+          // --- NEW: Automatically create a real ticket in Supabase! ---
+          // We only create a ticket if it looks like an actionable request (not just "NAVIGATE")
+          if (data.action.intent !== 'NAVIGATE' || prompt.length > 20) {
+            try {
+              const res = await fetch('/api/requests', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  title: `AI: ${prompt.length > 30 ? prompt.substring(0, 30) + '...' : prompt}`,
+                  description: data.reply,
+                  department: data.action.department || 'facilities',
+                  priority: (data.action.priority || 'medium').toLowerCase(),
+                  location_id: data.action.location_id
+                })
+              });
+              if (res.ok && onRefreshNeeded) {
+                // Wait a tiny bit for the DB to settle, then refresh the dashboard
+                setTimeout(() => onRefreshNeeded(), 500); 
+              }
+            } catch (ticketErr) {
+              console.error("Failed to auto-create ticket:", ticketErr);
+            }
+          }
+
           setPrompt('');
         } else {
           throw new Error('Location ID not found in LOCATIONS');
@@ -42,9 +74,9 @@ export default function AgenticInterface({ onLocationFound }: AgenticInterfacePr
       } else {
         throw new Error('Invalid response format');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setError('Failed to contact the spatial agent. Please try again.');
+      setError(err.message || 'Failed to contact the spatial agent. Please try again.');
     } finally {
       setIsLoading(false);
     }

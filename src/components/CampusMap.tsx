@@ -142,9 +142,15 @@ export default function CampusMap({ targetCoordinates, intent, tickets = [] }: C
         )}
 
         {/* Render markers for all open tickets */}
-        {tickets.filter(t => t.status !== 'Resolved' && t.status !== 'Completed').map(ticket => {
-          const coords = LOCATIONS[ticket.location_id as LocationId];
-          if (!coords) return null;
+        {tickets.filter(t => t.status !== 'Resolved' && t.status !== 'Completed').map((ticket, index) => {
+          let coords = LOCATIONS[ticket.location_id as LocationId];
+          
+          // If the location_id from Supabase isn't in our constants, place it dynamically
+          // so it still shows up on the map instead of disappearing!
+          if (!coords) {
+            // Space them out slightly in the air above the center
+            coords = [0 + (index * 2), 20, 0 + (index * 2)];
+          }
           
           return (
             <group key={ticket.id} position={coords}>
@@ -161,6 +167,22 @@ export default function CampusMap({ targetCoordinates, intent, tickets = [] }: C
             </group>
           );
         })}
+
+        {/* Permanent Labels for all LOCATIONS (To help with mapping) */}
+        {Object.entries(LOCATIONS).map(([locId, coords]) => (
+          <group key={`label-${locId}`} position={coords as [number, number, number]}>
+             {/* Small dot to mark the exact center */}
+             <mesh position={[0, 0, 0]}>
+                <sphereGeometry args={[0.2, 8, 8]} />
+                <meshBasicMaterial color="#ffffff" opacity={0.3} transparent />
+             </mesh>
+             <Html position={[0, -1, 0]} center>
+               <div className="text-white/40 text-[10px] font-mono whitespace-nowrap pointer-events-none tracking-widest uppercase">
+                 {locId.replace('_', ' ')}
+               </div>
+             </Html>
+          </group>
+        ))}
 
         <CameraControls 
           ref={cameraControlsRef} 

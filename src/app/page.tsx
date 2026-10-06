@@ -11,22 +11,23 @@ export default function Home() {
   const [intent, setIntent] = useState<string | null>(null);
   const [tickets, setTickets] = useState<any[]>([]);
 
-  useEffect(() => {
-    const fetchTickets = async () => {
+  const fetchTickets = async () => {
+    try {
+      const res = await fetch('/api/requests');
+      const text = await res.text();
+      if (!res.ok || !text) throw new Error("Fetch failed");
+      const json = JSON.parse(text);
+      setTickets(Array.isArray(json) ? json : (json.data || []));
+    } catch (err) {
       try {
-        const res = await fetch('/api/requests');
-        const text = await res.text();
-        if (!res.ok || !text) throw new Error("Fetch failed");
-        const json = JSON.parse(text);
-        setTickets(Array.isArray(json) ? json : (json.data || []));
-      } catch (err) {
-        try {
-          const fRes = await fetch('/fallbackData.json');
-          const fJson = await fRes.json();
-          setTickets(fJson.data || []);
-        } catch (e) {}
-      }
-    };
+        const fRes = await fetch('/fallbackData.json');
+        const fJson = await fRes.json();
+        setTickets(fJson.data || []);
+      } catch (e) {}
+    }
+  };
+
+  useEffect(() => {
     fetchTickets();
   }, []);
 
@@ -59,7 +60,7 @@ export default function Home() {
       </div>
 
       {/* Agentic Input */}
-      <AgenticInterface onLocationFound={handleLocationFound} />
+      <AgenticInterface onLocationFound={handleLocationFound} onRefreshNeeded={fetchTickets} />
 
       {/* Bento Dashboard */}
       <DashboardBento tickets={tickets} />
