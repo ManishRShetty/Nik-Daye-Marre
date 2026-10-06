@@ -21,6 +21,31 @@ export default function DashboardBento({ tickets = [], userRole = 'admin', onRef
     return true;
   });
 
+  // --- Real-time Average Resolution Time Calculation ---
+  let totalMinutes = 0;
+  let resolvedCount = 0;
+
+  tickets.forEach(t => {
+    if ((t.status === 'Resolved' || t.status === 'Completed') && t.resolved_at && t.created_at) {
+      const created = new Date(t.created_at);
+      const resolved = new Date(t.resolved_at);
+      const diffMs = resolved.getTime() - created.getTime();
+      totalMinutes += (diffMs / (1000 * 60)); // convert ms to minutes
+      resolvedCount++;
+    }
+  });
+
+  let avgTimeString = 'N/A';
+  if (resolvedCount > 0) {
+    const avgMinutes = Math.round(totalMinutes / resolvedCount);
+    const avgHours = Math.floor(avgMinutes / 60);
+    const avgMins = avgMinutes % 60;
+    
+    if (avgHours > 0 && avgMins > 0) avgTimeString = `${avgHours}h ${avgMins}m`;
+    else if (avgHours > 0) avgTimeString = `${avgHours}h`;
+    else avgTimeString = `${avgMins}m`;
+  }
+
   return (
     <div className="absolute inset-0 pointer-events-none z-10 flex items-center justify-end p-8 overflow-hidden">
       {/* Toggle Button */}
@@ -74,7 +99,7 @@ export default function DashboardBento({ tickets = [], userRole = 'admin', onRef
                   <div className="text-[11px] text-[#86868b] uppercase tracking-wide font-semibold mt-2">Resolved</div>
                </div>
                <div className="flex-1 bg-[#2c2c2e]/50 rounded-[20px] p-4 border border-white/[0.02]">
-                  <div className="text-[20px] leading-none font-bold text-white tracking-tight mt-1">2h 15m</div>
+                  <div className="text-[20px] leading-none font-bold text-white tracking-tight mt-1">{avgTimeString}</div>
                   <div className="text-[11px] text-[#86868b] uppercase tracking-wide font-semibold mt-3">Avg Time</div>
                </div>
             </div>

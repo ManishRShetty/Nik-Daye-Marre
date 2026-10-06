@@ -52,12 +52,29 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'Missing id or status' }, { status: 400 });
     }
 
-    const { data, error } = await supabase
+    const updatePayload: any = { status };
+    if (status === 'Completed' || status === 'Resolved') {
+      updatePayload.resolved_at = new Date().toISOString();
+    }
+
+    let { data, error } = await supabase
       .from('requests')
-      .update({ status })
+      .update(updatePayload)
       .eq('id', id)
       .select()
       .single();
+
+    // If Supabase throws an error because the `resolved_at` column doesn't exist yet, fallback
+    if (error && error.message.includes('resolved_at')) {
+      const fallbackUpdate = await supabase
+        .from('requests')
+        .update({ status })
+        .eq('id', id)
+        .select()
+        .single();
+      data = fallbackUpdate.data;
+      error = fallbackUpdate.error;
+    }
 
     if (error) throw error;
 
