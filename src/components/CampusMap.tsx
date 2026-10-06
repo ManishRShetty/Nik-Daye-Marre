@@ -4,6 +4,7 @@ import { useRef, useEffect, useState, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { CameraControls, Environment, useGLTF, Html } from '@react-three/drei';
 import * as THREE from 'three';
+import { LOCATIONS, LocationId } from '@/lib/constants';
 
 // Fallback component in case campus.glb is missing
 function FallbackCampus() {
@@ -68,9 +69,10 @@ function CampusModel({ url }: { url: string }) {
 interface CampusMapProps {
   targetCoordinates: [number, number, number] | null;
   intent: string | null;
+  tickets?: any[];
 }
 
-export default function CampusMap({ targetCoordinates, intent }: CampusMapProps) {
+export default function CampusMap({ targetCoordinates, intent, tickets = [] }: CampusMapProps) {
   const cameraControlsRef = useRef<CameraControls>(null);
 
   useEffect(() => {
@@ -109,7 +111,7 @@ export default function CampusMap({ targetCoordinates, intent }: CampusMapProps)
 
         {targetCoordinates && (
           <group position={targetCoordinates}>
-            {/* Red Marker */}
+            {/* Red Marker for AI Search */}
             <mesh position={[0, 2, 0]} castShadow>
               <coneGeometry args={[1, 3, 16]} />
               <meshStandardMaterial color="#ef4444" emissive="#ef4444" emissiveIntensity={0.5} />
@@ -129,6 +131,27 @@ export default function CampusMap({ targetCoordinates, intent }: CampusMapProps)
             )}
           </group>
         )}
+
+        {/* Render markers for all open tickets */}
+        {tickets.filter(t => t.status !== 'Resolved' && t.status !== 'Completed').map(ticket => {
+          const coords = LOCATIONS[ticket.location_id as LocationId];
+          if (!coords) return null;
+          
+          return (
+            <group key={ticket.id} position={coords}>
+              {/* Yellow Marker for Tickets */}
+              <mesh position={[0, 1.5, 0]} castShadow>
+                <sphereGeometry args={[0.5, 16, 16]} />
+                <meshStandardMaterial color="#eab308" emissive="#eab308" emissiveIntensity={0.5} />
+              </mesh>
+              <Html position={[0, 3, 0]} center>
+                <div className="bg-zinc-900/90 text-white px-2 py-1 rounded-md border border-amber-500/30 text-xs shadow-lg whitespace-nowrap pointer-events-none">
+                  {ticket.title}
+                </div>
+              </Html>
+            </group>
+          );
+        })}
 
         <CameraControls 
           ref={cameraControlsRef} 

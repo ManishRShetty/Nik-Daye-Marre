@@ -14,39 +14,39 @@ export interface TicketCardProps {
 
 export default function TicketCard({ id, title, status, time, description, delay = 0 }: TicketCardProps) {
   const statusColors = {
-    'Open': 'bg-pink-500/20 text-pink-300 border-pink-500/50',
-    'In Progress': 'bg-amber-500/20 text-amber-300 border-amber-500/50',
-    'Resolved': 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
+    'Open': 'text-[#ff9f0a] bg-[#ff9f0a]/10',
+    'In Progress': 'text-[#0a84ff] bg-[#0a84ff]/10',
+    'Resolved': 'text-[#30d158] bg-[#30d158]/10'
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay, ease: 'easeOut' }}
-      whileHover={{ scale: 1.02, y: -2 }}
-      className="p-5 rounded-2xl bg-zinc-900/60 backdrop-blur-xl border border-white/10 hover:border-indigo-500/50 transition-all duration-300 cursor-pointer group"
+      transition={{ duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={{ scale: 1.01, y: -1 }}
+      className="p-5 rounded-[24px] bg-[#1c1c1e]/60 backdrop-blur-3xl border border-white/[0.05] hover:bg-[#1c1c1e]/80 transition-all duration-300 cursor-pointer group"
     >
-      <div className="flex justify-between items-start mb-3">
-        <h3 className="text-white font-semibold text-lg leading-tight group-hover:text-indigo-400 transition-colors">
+      <div className="flex justify-between items-start mb-2">
+        <h3 className="text-white font-semibold text-[17px] tracking-tight leading-tight group-hover:text-white transition-colors">
           {title}
         </h3>
-        <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${statusColors[status]}`}>
+        <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase ${statusColors[status] || statusColors['Open']}`}>
           {status}
         </span>
       </div>
-      <p className="text-gray-400 text-sm line-clamp-2 mb-4 leading-relaxed">
+      <p className="text-[#a1a1a6] text-[15px] tracking-tight line-clamp-2 mb-4 leading-snug font-medium">
         {description}
       </p>
-      <div className="flex justify-between items-center text-xs text-gray-500 font-medium">
+      <div className="flex justify-between items-center text-[13px] text-[#86868b] font-medium tracking-tight">
         <span className="flex items-center gap-1.5">
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
           </svg>
           {id}
         </span>
         <span className="flex items-center gap-1.5">
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           {time}

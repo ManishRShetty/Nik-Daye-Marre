@@ -51,32 +51,39 @@ export default function AgenticInterface({ onLocationFound }: AgenticInterfacePr
   };
 
   return (
-    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-full max-w-lg z-10 pointer-events-auto">
+    <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 w-full max-w-[500px] z-10 pointer-events-auto">
       <form 
         onSubmit={handleSubmit}
-        className="bg-zinc-900/80 backdrop-blur-md p-4 rounded-xl border border-zinc-700/50 shadow-2xl flex gap-4"
+        className="bg-[#1c1c1e]/80 backdrop-blur-2xl p-2 rounded-full border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.4)] flex items-center gap-2"
       >
+        <div className="pl-4 text-white/40">
+           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+           </svg>
+        </div>
         <input
           type="text"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           disabled={isLoading}
-          placeholder="Tell the AI where to go..."
-          className="flex-1 bg-zinc-800/50 border border-zinc-700 rounded-lg px-4 py-2 text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+          placeholder="Ask Spatial AI..."
+          className="flex-1 bg-transparent border-none px-2 py-3 text-white placeholder-[#86868b] text-[17px] font-medium tracking-tight focus:outline-none disabled:opacity-50"
         />
         <button
           type="submit"
           disabled={isLoading || !prompt.trim()}
-          className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-lg font-semibold transition-colors disabled:opacity-50 min-w-[100px] flex justify-center items-center"
+          className="bg-white hover:bg-[#e5e5ea] text-black w-10 h-10 rounded-full flex justify-center items-center transition-colors disabled:opacity-30 disabled:hover:bg-white mr-1"
         >
           {isLoading ? (
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-              className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full"
+              className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full"
             />
           ) : (
-            'Send'
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
           )}
         </button>
       </form>
@@ -86,7 +93,7 @@ export default function AgenticInterface({ onLocationFound }: AgenticInterfacePr
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="text-red-400 text-xs mt-2 text-center bg-black/50 p-2 rounded-lg"
+            className="text-[#ff453a] text-sm font-medium mt-3 text-center"
           >
             {error}
           </motion.p>

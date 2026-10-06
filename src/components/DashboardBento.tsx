@@ -5,39 +5,7 @@ import { motion } from 'framer-motion';
 import TicketCard from './TicketCard';
 import RequestForm from './RequestForm';
 
-export default function DashboardBento() {
-  const [mockTickets, setMockTickets] = React.useState<any[]>([]);
-
-  React.useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        const res = await fetch('/api/requests');
-        const text = await res.text();
-        if (!res.ok || !text) throw new Error("Supabase fetch failed or empty");
-        
-        const json = JSON.parse(text);
-        
-        if (Array.isArray(json)) {
-          setMockTickets(json);
-        } else if (json.data && Array.isArray(json.data)) {
-          setMockTickets(json.data);
-        } else {
-          throw new Error("Invalid format");
-        }
-      } catch (err) {
-        console.warn("Falling back to local data...", err);
-        // Phase 3: Swap to local file to save the demo if Supabase fails
-        try {
-          const fallbackRes = await fetch('/fallbackData.json');
-          const fallbackJson = await fallbackRes.json();
-          if (fallbackJson.data) setMockTickets(fallbackJson.data);
-        } catch (fallbackErr) {
-          console.error("Fallback also failed", fallbackErr);
-        }
-      }
-    };
-    fetchTickets();
-  }, []);
+export default function DashboardBento({ tickets = [] }: { tickets?: any[] }) {
 
   return (
     <div className="absolute inset-0 pointer-events-none z-10 flex items-center justify-end p-8 overflow-hidden">
@@ -51,22 +19,24 @@ export default function DashboardBento() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="p-6 rounded-3xl bg-zinc-900/50 backdrop-blur-xl border border-white/10 flex flex-col justify-center relative overflow-hidden group"
+          transition={{ delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          className="p-6 rounded-[32px] bg-[#1c1c1e]/60 backdrop-blur-3xl border border-white/[0.05] flex flex-col justify-center relative overflow-hidden group shadow-[0_20px_40px_rgba(0,0,0,0.3)]"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <h2 className="text-3xl font-bold text-white mb-1 tracking-tight">Dashboard</h2>
-          <p className="text-gray-400 text-sm">System operating normally.</p>
-          
-          <div className="flex gap-4 mt-6">
-             <div className="flex-1 bg-black/30 rounded-2xl p-4 border border-white/5">
-                <div className="text-3xl font-bold text-indigo-400">{mockTickets.filter(t => t.status === 'Pending' || t.status === 'Open' || t.status === 'In Progress').length}</div>
-                <div className="text-xs text-gray-500 uppercase tracking-wider font-semibold mt-1">Active</div>
-             </div>
-             <div className="flex-1 bg-black/30 rounded-2xl p-4 border border-white/5">
-                <div className="text-3xl font-bold text-emerald-400">{mockTickets.filter(t => t.status === 'Resolved' || t.status === 'Completed').length}</div>
-                <div className="text-xs text-gray-500 uppercase tracking-wider font-semibold mt-1">Resolved</div>
-             </div>
+          <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-100" />
+          <div className="relative z-10">
+            <h2 className="text-[28px] font-semibold text-white mb-0.5 tracking-tight leading-none">Dashboard</h2>
+            <p className="text-[#a1a1a6] text-[15px] tracking-tight font-medium">System operating normally.</p>
+            
+            <div className="flex gap-4 mt-6">
+               <div className="flex-1 bg-[#2c2c2e]/50 rounded-[20px] p-4 border border-white/[0.02]">
+                  <div className="text-[32px] leading-none font-bold text-[#0a84ff] tracking-tight">{tickets.filter(t => t.status === 'Pending' || t.status === 'Open' || t.status === 'In Progress').length}</div>
+                  <div className="text-[12px] text-[#86868b] uppercase tracking-wide font-semibold mt-1.5">Active</div>
+               </div>
+               <div className="flex-1 bg-[#2c2c2e]/50 rounded-[20px] p-4 border border-white/[0.02]">
+                  <div className="text-[32px] leading-none font-bold text-[#30d158] tracking-tight">{tickets.filter(t => t.status === 'Resolved' || t.status === 'Completed').length}</div>
+                  <div className="text-[12px] text-[#86868b] uppercase tracking-wide font-semibold mt-1.5">Resolved</div>
+               </div>
+            </div>
           </div>
         </motion.div>
 
@@ -84,7 +54,7 @@ export default function DashboardBento() {
              <h3 className="text-white font-semibold tracking-tight">Recent Activity</h3>
              <button className="text-xs text-indigo-400 hover:text-indigo-300 font-medium">View All</button>
           </div>
-          {mockTickets.map((ticket, idx) => (
+          {tickets.map((ticket, idx) => (
             <TicketCard 
               key={ticket.id}
               {...ticket}
