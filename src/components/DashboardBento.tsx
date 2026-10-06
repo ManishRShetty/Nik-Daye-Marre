@@ -6,11 +6,22 @@ import TicketCard from './TicketCard';
 import RequestForm from './RequestForm';
 
 export default function DashboardBento() {
-  const mockTickets = [
-    { id: 'REQ-8021', title: 'Network Outage in Library', status: 'In Progress' as const, time: '2h ago', description: 'Students reporting no Wi-Fi access on the 3rd floor of the main library.' },
-    { id: 'REQ-8022', title: 'AC Maintenance - Block B', status: 'Open' as const, time: '4h ago', description: 'HVAC system needs quarterly maintenance check.' },
-    { id: 'REQ-8019', title: 'Projector Replacement', status: 'Resolved' as const, time: '1d ago', description: 'Replaced broken projector bulb in Lecture Hall 101.' }
-  ];
+  const [mockTickets, setMockTickets] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    const fetchTickets = async () => {
+      try {
+        const res = await fetch('/api/requests');
+        const json = await res.json();
+        if (json.data) {
+          setMockTickets(json.data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchTickets();
+  }, []);
 
   return (
     <div className="absolute inset-0 pointer-events-none z-10 flex items-center justify-end p-8 overflow-hidden">
@@ -33,11 +44,11 @@ export default function DashboardBento() {
           
           <div className="flex gap-4 mt-6">
              <div className="flex-1 bg-black/30 rounded-2xl p-4 border border-white/5">
-                <div className="text-3xl font-bold text-indigo-400">12</div>
+                <div className="text-3xl font-bold text-indigo-400">{mockTickets.filter(t => t.status === 'Pending' || t.status === 'Open' || t.status === 'In Progress').length}</div>
                 <div className="text-xs text-gray-500 uppercase tracking-wider font-semibold mt-1">Active</div>
              </div>
              <div className="flex-1 bg-black/30 rounded-2xl p-4 border border-white/5">
-                <div className="text-3xl font-bold text-emerald-400">84</div>
+                <div className="text-3xl font-bold text-emerald-400">{mockTickets.filter(t => t.status === 'Resolved' || t.status === 'Completed').length}</div>
                 <div className="text-xs text-gray-500 uppercase tracking-wider font-semibold mt-1">Resolved</div>
              </div>
           </div>

@@ -6,11 +6,32 @@ import { motion } from 'framer-motion';
 export default function RequestForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulate submission
-    setTimeout(() => setIsSubmitting(false), 1500);
+    
+    try {
+      const formData = new FormData(e.target as HTMLFormElement);
+      const res = await fetch('/api/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: formData.get('title'),
+          description: formData.get('description'),
+          department: formData.get('department'),
+          priority: formData.get('priority'),
+          location_id: 'ADMIN_BLOCK' // Hardcoded default for the form
+        })
+      });
+      if (res.ok) {
+        (e.target as HTMLFormElement).reset();
+        // Optionally trigger a refresh in DashboardBento here
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
