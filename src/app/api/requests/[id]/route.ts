@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 
 export async function PATCH(
   request: Request,
@@ -8,8 +9,13 @@ export async function PATCH(
     const { id } = await params;
     const body = await request.json();
     
-    // In Phase 3, this will update Supabase
-    // await supabase.from('requests').update({ status: body.status }).eq('id', id);
+    const { data, error } = await supabase
+      .from('Requests')
+      .update({ status: body.status })
+      .eq('id', id)
+      .select();
+
+    if (error) throw error;
 
     return NextResponse.json({
       id: id,
@@ -17,7 +23,7 @@ export async function PATCH(
       updated_at: new Date().toISOString()
     }, { status: 200 });
   } catch (error) {
-    console.error(error);
+    console.error('PATCH /api/requests/[id] error:', error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
