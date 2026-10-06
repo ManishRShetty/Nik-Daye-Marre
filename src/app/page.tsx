@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react';
 import CampusMap from '@/components/CampusMap';
 import AgenticInterface from '@/components/AgenticInterface';
 import DashboardBento from '@/components/DashboardBento';
-import { motion } from 'framer-motion';
+import IntroSplash from '@/components/IntroSplash';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Home() {
+  const [showIntro, setShowIntro] = useState(true);
   const [targetCoords, setTargetCoords] = useState<[number, number, number] | null>(null);
   const [intent, setIntent] = useState<string | null>(null);
   const [tickets, setTickets] = useState<any[]>([]);
@@ -37,6 +39,10 @@ export default function Home() {
 
   return (
     <main className="relative w-full h-screen overflow-hidden bg-black selection:bg-indigo-500/30">
+      <AnimatePresence>
+        {showIntro && <IntroSplash onComplete={() => setShowIntro(false)} />}
+      </AnimatePresence>
+
       {/* 3D Scene */}
       <div className="absolute inset-0 z-0">
         <CampusMap targetCoordinates={targetCoords} intent={intent} tickets={tickets} />
