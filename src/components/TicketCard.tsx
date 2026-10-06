@@ -11,9 +11,10 @@ export interface TicketCardProps {
   description: string;
   delay?: number;
   userRole?: 'admin' | 'student';
+  onRefreshNeeded?: () => void;
 }
 
-export default function TicketCard({ id, title, status, time, description, delay = 0, userRole = 'student' }: TicketCardProps) {
+export default function TicketCard({ id, title, status, time, description, delay = 0, userRole = 'student', onRefreshNeeded }: TicketCardProps) {
   const [currentStatus, setCurrentStatus] = React.useState(status);
 
   const statusColors: Record<string, string> = {
@@ -22,6 +23,22 @@ export default function TicketCard({ id, title, status, time, description, delay
     'In Progress': 'text-[#0a84ff] bg-[#0a84ff]/10',
     'Resolved': 'text-[#30d158] bg-[#30d158]/10',
     'Completed': 'text-[#30d158] bg-[#30d158]/10'
+  };
+
+  const handleStatusChange = async (newStatus: string) => {
+    setCurrentStatus(newStatus as any);
+    try {
+      await fetch('/api/requests', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status: newStatus })
+      });
+      if (onRefreshNeeded) {
+        onRefreshNeeded(); // Trigger map and dashboard reload
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -40,7 +57,7 @@ export default function TicketCard({ id, title, status, time, description, delay
         {userRole === 'admin' ? (
           <select 
             value={currentStatus}
-            onChange={(e) => setCurrentStatus(e.target.value as any)}
+            onChange={(e) => handleStatusChange(e.target.value)}
             onClick={(e) => e.stopPropagation()}
             className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase cursor-pointer outline-none border border-white/10 ${statusColors[currentStatus] || statusColors['Open']}`}
           >
