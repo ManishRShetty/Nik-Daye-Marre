@@ -1,19 +1,43 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import TicketCard from './TicketCard';
 import RequestForm from './RequestForm';
 
 export default function DashboardBento({ tickets = [] }: { tickets?: any[] }) {
+  const [isMinimized, setIsMinimized] = useState(false);
 
   return (
     <div className="absolute inset-0 pointer-events-none z-10 flex items-center justify-end p-8 overflow-hidden">
+      {/* Toggle Button */}
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        onClick={() => setIsMinimized(!isMinimized)}
+        className="pointer-events-auto absolute right-8 top-8 z-50 bg-[#1c1c1e]/80 backdrop-blur-3xl border border-white/[0.05] w-10 h-10 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-[#2c2c2e]/80 transition-all shadow-lg"
+      >
+        <motion.svg 
+          animate={{ rotate: isMinimized ? 180 : 0 }} 
+          className="w-5 h-5" 
+          fill="none" 
+          viewBox="0 0 24 24" 
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </motion.svg>
+      </motion.button>
+
       <motion.div 
         initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.7, ease: 'easeOut' }}
-        className="w-full max-w-[420px] h-full max-h-[85vh] flex flex-col gap-6 pointer-events-auto mt-16 scrollbar-hide overflow-y-auto pb-24"
+        animate={{ 
+          opacity: isMinimized ? 0 : 1, 
+          x: isMinimized ? 450 : 0,
+          pointerEvents: isMinimized ? 'none' : 'auto' 
+        }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full max-w-[420px] h-full max-h-[85vh] flex flex-col gap-6 mt-16 scrollbar-hide overflow-y-auto pb-24 relative"
       >
         {/* Bento Item 1: Stats / Welcome */}
         <motion.div 

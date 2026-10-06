@@ -1,7 +1,7 @@
 'use client';
 
-import { useRef, useEffect, useState, Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { useRef, useEffect, Suspense } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { CameraControls, Environment, useGLTF, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { LOCATIONS, LocationId } from '@/lib/constants';
@@ -70,6 +70,15 @@ interface CampusMapProps {
   targetCoordinates: [number, number, number] | null;
   intent: string | null;
   tickets?: any[];
+}
+
+function CinematicPan({ controlsRef, isSearching }: { controlsRef: React.RefObject<CameraControls | null>, isSearching: boolean }) {
+  useFrame((_, delta) => {
+    if (controlsRef.current && !isSearching) {
+      controlsRef.current.azimuthAngle += 0.05 * delta;
+    }
+  });
+  return null;
 }
 
 export default function CampusMap({ targetCoordinates, intent, tickets = [] }: CampusMapProps) {
@@ -159,6 +168,8 @@ export default function CampusMap({ targetCoordinates, intent, tickets = [] }: C
           maxDistance={150} 
           maxPolarAngle={Math.PI / 2 - 0.05} // don't go below ground
         />
+        
+        <CinematicPan controlsRef={cameraControlsRef} isSearching={!!targetCoordinates} />
       </Canvas>
     </div>
   );
