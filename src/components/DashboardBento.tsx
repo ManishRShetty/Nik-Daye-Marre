@@ -12,12 +12,28 @@ export default function DashboardBento() {
     const fetchTickets = async () => {
       try {
         const res = await fetch('/api/requests');
-        const json = await res.json();
-        if (json.data) {
+        const text = await res.text();
+        if (!res.ok || !text) throw new Error("Supabase fetch failed or empty");
+        
+        const json = JSON.parse(text);
+        
+        if (Array.isArray(json)) {
+          setMockTickets(json);
+        } else if (json.data && Array.isArray(json.data)) {
           setMockTickets(json.data);
+        } else {
+          throw new Error("Invalid format");
         }
       } catch (err) {
-        console.error(err);
+        console.warn("Falling back to local data...", err);
+        // Phase 3: Swap to local file to save the demo if Supabase fails
+        try {
+          const fallbackRes = await fetch('/fallbackData.json');
+          const fallbackJson = await fallbackRes.json();
+          if (fallbackJson.data) setMockTickets(fallbackJson.data);
+        } catch (fallbackErr) {
+          console.error("Fallback also failed", fallbackErr);
+        }
       }
     };
     fetchTickets();
