@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { LOCATIONS, LocationId } from '@/lib/constants';
 
 interface AgenticInterfaceProps {
   onLocationFound: (coords: [number, number, number], intent: string) => void;
@@ -23,16 +24,21 @@ export default function AgenticInterface({ onLocationFound }: AgenticInterfacePr
       const response = await fetch('/api/agent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ message: prompt }),
       });
 
       if (!response.ok) throw new Error('Network response was not ok');
 
       const data = await response.json();
       
-      if (data.coordinates && data.intent) {
-        onLocationFound(data.coordinates as [number, number, number], data.intent);
-        setPrompt('');
+      if (data.action && data.action.location_id) {
+        const coords = LOCATIONS[data.action.location_id as LocationId];
+        if (coords) {
+          onLocationFound(coords as [number, number, number], data.action.intent || data.reply);
+          setPrompt('');
+        } else {
+          throw new Error('Location ID not found in LOCATIONS');
+        }
       } else {
         throw new Error('Invalid response format');
       }

@@ -103,7 +103,7 @@ export default function CampusMap({ targetCoordinates, intent }: CampusMapProps)
 
         <Environment preset="city" />
 
-        <CampusModel url="/campus.glb" />
+        <FallbackCampus />
 
         {targetCoordinates && (
           <group position={targetCoordinates}>

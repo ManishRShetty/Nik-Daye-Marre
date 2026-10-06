@@ -1,52 +1,65 @@
-import { GoogleGenAI, Type, Schema } from '@google/genai';
+import { NextResponse } from 'next/server';
+import { GoogleGenAI, Type } from '@google/genai';
+import { LOCATIONS } from '@/lib/constants';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Use the new Google Gen AI SDK
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
-const responseSchema: Schema = {
-  type: Type.OBJECT,
-  properties: {
-    coordinates: {
-      type: Type.ARRAY,
-      items: { type: Type.NUMBER },
-      description: "The [x, y, z] coordinates of the location mentioned.",
-    },
-    intent: {
-      type: Type.STRING,
-      description: "A short description of what the user wants to do or see.",
-    },
-  },
-  required: ["coordinates", "intent"],
-};
-
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const { prompt } = await req.json();
+    const { message } = await request.json();
+
+    if (!process.env.GEMINI_API_KEY) {
+      console.warn("No GEMINI_API_KEY found, returning mock response.");
+      return NextResponse.json({
+        reply: "I've logged a high-priority maintenance request (Mock). Add GEMINI_API_KEY to .env to use real AI.",
+        action: {
+          intent: "CREATE_TICKET",
+          department: "Maintenance",
+          priority: "Urgent",
+          location_id: "LAB_3"
+        }
+      });
+    }
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-pro',
-      contents: prompt,
+      contents: `You are an AI assistant for a smart campus. User says: "${message}". 
+      Identify the intent, department, priority, and map the location to one of these valid location_ids: ${Object.keys(LOCATIONS).join(', ')}. 
+      Respond strictly in the required JSON format.`,
       config: {
         responseMimeType: "application/json",
-        responseSchema: responseSchema,
-        systemInstruction: `You are an agentic spatial intelligence guiding a user through a 3D campus map.
-The user will ask to navigate to a location or express an intent.
-You must map their request to a plausible [x, y, z] coordinate on the campus map and describe the intent.
-
-Here are some known locations on the campus:
-- Library: [10, 5, -20]
-- Cafeteria: [-15, 2, 10]
-- Dorms: [20, 0, 15]
-- Gym: [0, 0, -30]
-- Main Gate: [0, 0, 0]
-- Computer Science Building: [-10, 8, -10]
-
-If the user asks for a location not explicitly listed, extrapolate a reasonable coordinate within the bounds of [-30, 0, -30] to [30, 10, 30].`,
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            reply: { type: Type.STRING, description: "A friendly reply to the user" },
+            action: {
+              type: Type.OBJECT,
+              properties: {
+                intent: { type: Type.STRING },
+                department: { type: Type.STRING },
+                priority: { type: Type.STRING },
+                location_id: { type: Type.STRING, description: `Must be one of: ${Object.keys(LOCATIONS).join(', ')}` }
+              },
+              required: ["intent", "department", "priority", "location_id"]
+            }
+          },
+          required: ["reply", "action"]
+        }
       }
     });
-    
-    return Response.json(JSON.parse(response.text || '{}'));
+
+    if (!response.text) {
+      throw new Error("Empty response from AI");
+    }
+
+    const data = JSON.parse(response.text);
+    return NextResponse.json(data);
   } catch (error) {
-    console.error('Agent API Error:', error);
-    return Response.json({ error: "Failed to process agentic request" }, { status: 500 });
+    console.error("API Agent Error:", error);
+    return NextResponse.json(
+      { error: "Failed to process request" }, 
+      { status: 500 }
+    );
   }
 }
