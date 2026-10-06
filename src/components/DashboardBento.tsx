@@ -20,7 +20,7 @@ export default function DashboardBento({ tickets = [] }: { tickets?: any[] }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="p-6 rounded-[32px] bg-[#1c1c1e]/60 backdrop-blur-3xl border border-white/[0.05] flex flex-col justify-center relative overflow-hidden group shadow-[0_20px_40px_rgba(0,0,0,0.3)]"
+          className="shrink-0 p-6 rounded-[32px] bg-[#1c1c1e]/60 backdrop-blur-3xl border border-white/[0.05] flex flex-col justify-center relative overflow-hidden group shadow-[0_20px_40px_rgba(0,0,0,0.3)]"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-100" />
           <div className="relative z-10">
@@ -41,14 +41,16 @@ export default function DashboardBento({ tickets = [] }: { tickets?: any[] }) {
         </motion.div>
 
         {/* Bento Item 2: Request Form */}
-        <RequestForm />
+        <div className="shrink-0">
+          <RequestForm />
+        </div>
 
         {/* Bento Item 3: Recent Activity / Tickets */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="flex flex-col gap-3"
+          className="shrink-0 flex flex-col gap-3"
         >
           <div className="flex items-center justify-between px-2 mb-1">
              <h3 className="text-white font-semibold tracking-tight">Recent Activity</h3>
